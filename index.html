@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS Part 3 · Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8a96e;
+    --accent2: #7eb8a4;
+    --text: #e8e2d9;
+    --text-muted: #6b6560;
+    --text-mid: #a09890;
+    --reveal1: #1a2420;
+    --reveal2: #1e1a12;
+    --tag-bg: #222;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+
+  .logo span {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    margin-left: 10px;
+    font-style: normal;
+  }
+
+  .counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* TOPIC FILTER */
+  .topic-bar {
+    padding: 14px 24px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .topic-bar::-webkit-scrollbar { display: none; }
+
+  .topic-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .topic-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .topic-btn.active {
+    background: var(--accent);
+    color: #0e0e0e;
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* MAIN CARD AREA */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 32px 20px 100px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 680px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-topic-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px 0;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(200, 169, 110, 0.1);
+    padding: 3px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(200, 169, 110, 0.2);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .card-question {
+    padding: 16px 20px 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    line-height: 1.45;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  /* REVEAL SECTIONS */
+  .reveal-section {
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .reveal-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+    text-align: left;
+  }
+
+  .reveal-btn:hover { background: var(--surface2); }
+
+  .reveal-btn.revealed-1 {
+    background: var(--reveal1);
+    color: var(--accent2);
+  }
+
+  .reveal-btn.revealed-2 {
+    background: var(--reveal2);
+    color: var(--accent);
+  }
+
+  .reveal-icon {
+    font-size: 16px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .reveal-btn.open .reveal-icon { transform: rotate(180deg); }
+
+  .reveal-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .reveal-content.open { max-height: 1000px; }
+
+  /* POINTS CONTENT */
+  .points-content {
+    padding: 4px 20px 20px;
+    background: var(--reveal1);
+  }
+
+  .point-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #b8d4cc;
+  }
+
+  .point-dot {
+    color: var(--accent2);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .phrases-row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(126, 184, 164, 0.15);
+  }
+
+  .phrases-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  .phrase-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent2);
+    background: rgba(126, 184, 164, 0.08);
+    border: 1px solid rgba(126, 184, 164, 0.2);
+    padding: 3px 10px;
+    border-radius: 8px;
+  }
+
+  /* FULL ANSWER CONTENT */
+  .answer-content {
+    padding: 4px 20px 20px;
+    background: var(--reveal2);
+  }
+
+  .answer-en {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #e8ddc8;
+    margin-bottom: 14px;
+  }
+
+  .answer-divider {
+    height: 1px;
+    background: rgba(200, 169, 110, 0.15);
+    margin-bottom: 14px;
+  }
+
+  .answer-cn {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px 24px;
+    background: linear-gradient(to top, var(--bg) 60%, transparent);
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .nav-btn {
+    padding: 12px 28px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { border-color: var(--text-mid); color: var(--text); }
+
+  .nav-btn.primary {
+    background: var(--accent);
+    color: #0e0e0e;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .nav-btn.primary:hover { opacity: 0.9; }
+
+  .progress-bar {
+    width: 100%;
+    max-width: 680px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-bottom: 24px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: var(--text-mid);
+  }
+
+  @media (max-width: 480px) {
+    .card-question { font-size: 17px; }
+    header { padding: 16px 16px 12px; }
+    main { padding: 24px 12px 100px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Part 3 <span>flashcards</span></div>
+  <div class="counter" id="counter">1 / 1</div>
+</header>
+
+<div class="topic-bar" id="topicBar"></div>
+
+<main>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div id="cardContainer"></div>
+</main>
+
+<div class="bottom-nav">
+  <button class="nav-btn" onclick="prevCard()">← Prev</button>
+  <button class="nav-btn primary" onclick="nextCard()">Next →</button>
+</div>
+
+<script>
+const data = [
+  {
+    topic: "App / AI",
+    q: "What are the differences between old and young people when using apps?",
+    points: [
+      "年轻人是 digital natives，上手快、敢试错",
+      "老年人更谨慎，担心隐私和安全",
+      "关键差距不是能力，而是自信心"
+    ],
+    phrases: ["digital natives", "pick up new apps intuitively", "approach with caution", "the gap is about confidence, not capability"],
+    en: "Generally speaking, younger people tend to be digital natives — they've grown up with technology, so they approach new apps with intuitive confidence and experiment freely. They're also more likely to use apps for productivity, socialising, and even things like AI-assisted workflows. Older adults, on the other hand, tend to be more cautious — partly due to concerns about privacy and security, and partly because the learning curve feels steeper. That said, I don't think capability is really the issue. Once older users become familiar with a tool, they can be just as proficient. The key difference, in my view, is confidence rather than ability.",
+    cn: "总体来说，年轻人往往是数字原住民，对新应用有一种直觉性的自信。老年人则更谨慎，主要是担心隐私和安全问题。但我认为能力本身不是核心差距，一旦熟悉了工具，老年人完全可以用得很好。真正的差距在于自信心。"
+  },
+  {
+    topic: "App / AI",
+    q: "Why do some people not like using apps?",
+    points: [
+      "学习成本高，尤其对非技术用户",
+      "隐私顾虑越来越普遍",
+      "信息过载——太多app反而让人想退出"
+    ],
+    phrases: ["steep learning curve", "data privacy concerns", "app fatigue", "overwhelmed by too many options"],
+    en: "I think there are a few reasons. First, the learning curve can feel quite steep, especially for people who aren't particularly tech-savvy. Even something as simple as knowing how to prompt an AI tool effectively is a barrier for many users — which is actually one reason I built my Task 1 Responder, to remove exactly that kind of friction. Second, privacy concerns are increasingly common — people worry about how their data is being used. And third, there's what I'd call app fatigue — when you have dozens of apps competing for your attention, some people simply choose to opt out rather than feel overwhelmed.",
+    cn: "我觉得有几个原因。首先是学习成本，对非技术用户来说门槛很高。其次是隐私顾虑。第三是"app疲劳"——选择太多反而让人想退出。"
+  },
+  {
+    topic: "App / AI",
+    q: "What apps are popular in your country? Why?",
+    points: [
+      "WeChat：几乎是基础设施，社交+支付+小程序一体",
+      "Alipay：让中国成为最无现金的社会之一",
+      "AI工具正在快速普及，尤其职场人群"
+    ],
+    phrases: ["deeply embedded in daily life", "cashless society", "AI-powered tools are gaining traction"],
+    en: "In China, WeChat is probably the most dominant app — it's deeply embedded in daily life, combining messaging, payments, and even mini-programs all in one platform. Alipay has also transformed how people pay, making China one of the most cashless societies in the world. More recently, AI-powered tools have been gaining serious traction, especially among younger professionals. Personally, I've noticed more and more colleagues starting to use AI assistants to streamline their work, which I think reflects a broader shift in how people approach productivity.",
+    cn: "在中国，微信可能是最主导的应用，把社交、支付和小程序整合在一起。支付宝则让中国成为最无现金化的社会之一。最近AI工具也在快速普及，越来越多的职场人开始用AI提升效率。"
+  },
+  {
+    topic: "App / AI",
+    q: "Should parents limit their children's use of computer programs and games?",
+    points: [
+      "适度限制有必要，但全面禁止适得其反",
+      "关键是引导而不是堵截",
+      "数字素养比限制更重要，因为这些工具是未来职业基础"
+    ],
+    phrases: ["moderation is key", "digital literacy", "guide rather than restrict", "ban drives usage underground"],
+    en: "I think moderation is key here. Outright bans tend to be counterproductive — they often drive usage underground, making it harder for parents to monitor or guide their children. A more effective approach, in my view, is to develop children's digital literacy — teaching them how to use technology responsibly rather than simply restricting access. After all, these tools are going to be fundamental to their future careers. The goal should be teaching healthy habits around technology use, not creating an adversarial relationship with it.",
+    cn: "我认为适度是关键。全面禁止往往适得其反，更有效的方式是培养数字素养，教孩子如何负责任地使用技术。毕竟这些工具将来会是他们职业生涯的基础。"
+  },
+  {
+    topic: "App / AI",
+    q: "Do you think young people are increasingly reliant on these programs?",
+    points: [
+      "依赖度在增加，但要区分 healthy reliance 和 over-dependence",
+      "AI工具应该是思维的放大器，不是替代品",
+      "关键不是是否依赖，而是怎么依赖"
+    ],
+    phrases: ["healthy reliance vs over-dependence", "amplifier not a replacement", "atrophy of independent thinking"],
+    en: "Yes, reliance is definitely increasing, but I think we need to distinguish between healthy reliance and over-dependence. I use AI tools extensively myself, but I make a conscious effort to treat them as amplifiers of my own thinking rather than replacements for it. The risk of over-dependence is real — if you stop thinking independently, those skills can atrophy. I actually built my Task 1 tool with that philosophy in mind: it helps me compare my own analysis against a structured response, rather than just generating answers for me. So I think the question isn't whether young people rely on these tools, but how they rely on them.",
+    cn: "依赖度确实在增加，但要区分健康依赖和过度依赖。AI工具应该是思维的放大器，而不是替代品。过度依赖的风险在于独立思考能力会退化。关键不是年轻人是否依赖这些工具，而是他们怎么依赖。"
+  },
+  {
+    topic: "Famous Person",
+    q: "Do people become famous because of their talent?",
+    points: [
+      "天赋是起点，但不是全部",
+      "Jensen Huang：GPU本是游戏显卡，他看到了AI计算的潜力",
+      "成功 = 天赋 + 眼光 + 时机的结合"
+    ],
+    phrases: ["talent is a starting point", "vision to see new possibilities", "being in the right place at the right time", "strategic thinking matters as much as raw talent"],
+    en: "Talent is certainly part of it, but I don't think it's the whole picture. Take Jensen Huang as an example — he was clearly technically gifted, but what made him truly exceptional was his strategic vision. He saw that GPUs, which were originally designed for gaming, could be repurposed for large-scale AI computing long before most people recognised that possibility. That kind of foresight goes beyond talent — it's about having the curiosity to imagine a completely different future for your technology. So I'd say fame and success come from a combination of talent, vision, and timing.",
+    cn: "天赋当然是一部分，但不是全部。以Jensen Huang为例，真正让他脱颖而出的是战略眼光——他在大多数人意识到之前就看到了GPU在AI计算领域的潜力。成功来自天赋、眼光和时机的结合。"
+  },
+  {
+    topic: "Famous Person",
+    q: "What kinds of jobs need imagination?",
+    points: [
+      "明显的：艺术、设计、写作",
+      "容易忽视的：技术和商业——CUDA的发明就是想象力的产物",
+      "AI时代：想象力比执行力更难被替代"
+    ],
+    phrases: ["artistic creativity vs strategic creativity", "automation replaces execution", "imagination is the last frontier"],
+    en: "Beyond the obvious creative fields, I think technology increasingly requires imagination. Vibe coding — the approach I used to build my IELTS tool — is essentially about imagining what you want a system to do and then finding ways to make it happen, even without deep technical expertise. In the AI era, the execution layer is increasingly being automated. What remains irreplaceable is the ability to imagine a problem worth solving in the first place. So in a sense, imagination is becoming the most valuable skill across almost every profession.",
+    cn: "除了明显的创意领域，技术工作越来越需要想象力。Vibe coding本质上就是想象你希望系统做什么然后实现它。在AI时代，执行层正在被自动化，真正不可替代的是首先想象出一个值得解决的问题的能力。"
+  },
+  {
+    topic: "Famous Person",
+    q: "What can children do to become famous?",
+    points: [
+      "与其追求出名，不如培养深度技能和好奇心",
+      "社交媒体让出名门槛降低，但fame更短暂",
+      "Jensen Huang没有为了出名——名声是解决真实问题的副产品"
+    ],
+    phrases: ["cultivate genuine curiosity", "fame is a byproduct not a goal", "depth over visibility", "solve real problems"],
+    en: "Honestly, I think the question itself is worth challenging a little. In the social media age, becoming famous has never been easier — but that kind of fame is often very shallow and short-lived. What I'd encourage children to focus on instead is cultivating genuine curiosity and developing deep skills in something they care about. Jensen Huang didn't set out to become famous — he set out to build better technology. The recognition came as a byproduct of solving real problems. I think that's a much healthier model for children to aspire to.",
+    cn: "我觉得这个问题本身值得稍微质疑一下。在社交媒体时代，出名从未如此容易，但这种名气往往很肤浅且短暂。我更建议孩子培养真正的好奇心和深度技能。名声是解决真实问题的副产品。"
+  },
+  {
+    topic: "Famous Person",
+    q: "How do artists acquire inspiration?",
+    points: [
+      "来自对真实问题的细心观察",
+      "Jensen Huang：发现现有工具被局限地使用→想象更广泛应用",
+      "灵感不是等来的，是在行动和好奇心中自然出现的"
+    ],
+    phrases: ["cross-domain observation", "inspiration from real pain points", "inspiration strikes during action not waiting"],
+    en: "I think inspiration most often comes from paying close attention to problems in real life. For people in technology, like Jensen Huang, inspiration came from noticing that existing tools were being used in a limited way and imagining broader applications. Personally, my own experience building an IELTS writing tool came from a very concrete frustration — I struggled with Task 1 structure and thought: this is a solvable problem. So I'd say inspiration is less about waiting for a spark and more about staying curious and engaged with the world around you.",
+    cn: "灵感最常来自对现实问题的细心观察。Jensen Huang的灵感来自发现现有工具被局限地使用，然后想象更广泛的应用。我做IELTS写作工具的灵感也来自一个具体的痛点。灵感不是等来的，而是在保持好奇心的过程中自然出现的。"
+  },
+  {
+    topic: "Sportsperson",
+    q: "What qualities should an athlete have?",
+    points: [
+      "天赋、毅力、纪律——这是基础",
+      "现代运动员还需要拥抱科技的能力",
+      "Hamilton：不只是开车，还要和工程师、数据系统深度协作"
+    ],
+    phrases: ["perseverance and discipline", "embrace cutting-edge technology", "collaboration with data systems", "human skill amplified by technology"],
+    en: "The obvious qualities are perseverance, discipline, and competitive drive. But I think modern athletes need something additional — the ability to embrace and work with technology. Formula One is a good example of this. Lewis Hamilton doesn't just rely on raw driving skill; he works closely with engineers and data systems to refine every aspect of his performance. AI and simulation tools are used to model race scenarios and analyse his driving patterns. The best modern athletes are people who can combine human instinct with data-driven insight.",
+    cn: "明显的品质是毅力、纪律和竞争意志。但现代运动员还需要拥抱科技的能力。Hamilton不只依靠驾驶技术，还要和工程师、数据系统深度协作。最优秀的现代运动员是能把人类直觉和数据洞察结合起来的人。"
+  },
+  {
+    topic: "Sportsperson",
+    q: "Is talent important in sports?",
+    points: [
+      "天赋是入场券，但不是决定因素",
+      "Hamilton：父亲打多份工买卡丁车，起点并不优越",
+      "真正的分水岭是长期投入和心态"
+    ],
+    phrases: ["talent is the entry ticket", "long-term commitment is the differentiator", "growth mindset", "humble beginnings"],
+    en: "Talent matters, but I think it's more of an entry ticket than a guarantee of success. Lewis Hamilton's story is a good illustration — he didn't come from a privileged background. His father worked multiple jobs just to buy him a go-kart so he could start practicing. What turned that early talent into seven world championships was decades of commitment, the ability to adapt, and the discipline to keep improving even when he was already at the top. Talent gets you started, but long-term dedication and the right mindset are what actually take you to the top.",
+    cn: "天赋更像是入场券而不是成功的保证。Hamilton的故事很好地说明了这一点——他父亲打多份工才买得起卡丁车。把早期天赋转化为七届世界冠军的，是几十年的投入和持续改进的纪律。"
+  },
+  {
+    topic: "Sportsperson",
+    q: "Why are there so few top athletes?",
+    points: [
+      "顶尖需要天赋、资源、心态三者同时具备",
+      "F1额外需要：竞争力团队 + 技术资源 + 巨额资金",
+      "比赛差距只在毫秒之间，任何环节的细微差距都决定胜负"
+    ],
+    phrases: ["convergence of talent, resources and mindset", "razor-thin margins", "the cost of entry is extremely high", "scarcity creates value"],
+    en: "I think reaching the very top requires a rare convergence of talent, resources, and the right mindset — and all three have to come together at the right time. In Formula One specifically, the barriers are even higher because it's not just about the driver. You need a competitive team, cutting-edge technology, and significant financial backing. The margins at the top are razor-thin — races are decided by milliseconds — so even a small gap in any of these areas can make the difference between winning and losing.",
+    cn: "到达顶尖需要天赋、资源和心态三者在正确时机同时汇聚。在F1里门槛更高，还需要有竞争力的车队和技术支持。比赛差距只在毫秒之间，任何环节的细微差距都可能决定胜负。"
+  },
+  {
+    topic: "Sportsperson",
+    q: "Should students have physical education at school?",
+    points: [
+      "不只是身体健康——体育培养的抗压能力是课堂教不了的",
+      "Hamilton早期职业挫折塑造了他的心理韧性",
+      "体育不是"休息"，而是培养全面个体的必要部分"
+    ],
+    phrases: ["resilience under pressure", "growth mindset", "lessons that the classroom can't teach", "balance academic and physical development"],
+    en: "Absolutely, and I think the reasons go beyond just physical fitness. Sport teaches resilience in a way that academic subjects simply can't replicate. When you lose a race or fail to make a team, you have to process that disappointment and come back stronger — that's an incredibly valuable life skill. Lewis Hamilton's journey is actually a good example: the setbacks he faced early in his career arguably shaped his mental toughness as much as his victories did. Physical education should be seen as an essential part of developing well-rounded individuals.",
+    cn: "当然应该，而且原因不只是身体健康。体育培养的抗压能力是学术科目无法复制的。输掉比赛后必须消化失落感然后更强地回来——这是极其宝贵的人生技能。Hamilton早期职业生涯中的挫折，可以说和他的胜利同样塑造了他的心理韧性。"
+  },
+  {
+    topic: "Nature",
+    q: "Why should we protect wild animals?",
+    points: [
+      "生态系统相互依存，一个物种消失会引发连锁反应",
+      "珊瑚礁：消失了，依赖它的无数物种也随之失去家园",
+      "保护自然本质上是人类的自我保护"
+    ],
+    phrases: ["interconnected ecosystems", "chain reaction", "lose their habitats", "protecting nature is ultimately self-preservation"],
+    en: "I think the core reason is that ecosystems are deeply interconnected. When one species disappears, it triggers a chain reaction that affects everything around it. The coral reef example from Attenborough's documentary really stuck with me — coral reefs support an enormous number of marine species. When they're destroyed by deep-sea fishing equipment in a matter of minutes, countless species suddenly lose their habitats and food sources. And ultimately, protecting wild animals is a form of self-preservation for humans too — we're part of the same system.",
+    cn: "核心原因是生态系统深度相互依存。一个物种消失会引发连锁反应。珊瑚礁被深海渔船在几分钟内摧毁，无数物种随之失去栖息地。而且归根结底，保护野生动物也是人类的自我保护——我们是同一个系统的一部分。"
+  },
+  {
+    topic: "Nature",
+    q: "Why are some people more willing to protect wild animals than others?",
+    points: [
+      "接触和了解程度决定共情程度",
+      "城市人：眼不见心不烦",
+      "对渔民来说，保护和生计之间有真实冲突——不能轻易评判"
+    ],
+    phrases: ["exposure creates empathy", "out of sight out of mind", "genuine conflict between conservation and livelihood"],
+    en: "I think exposure and personal experience play a huge role. Before I watched Attenborough's documentary, I honestly didn't think much about marine ecosystems. Seeing those images created a kind of empathy that abstract facts simply can't. For people who live far from nature, it's very much an out-of-sight-out-of-mind situation. But I also think it's important to acknowledge that for some people, like local fishermen, there's a genuine conflict between conservation and their livelihood. That's a much harder position to be in, and we need to be careful not to judge too quickly.",
+    cn: "接触程度和个人经历影响很大。在看Attenborough的纪录片之前，我老实说没怎么想过海洋生态系统。那些画面创造了抽象数据无法给予的共情。对远离自然的城市人来说是眼不见心不烦。但对渔民这样的人来说，保护和生计之间存在真实的冲突，这是很难的处境。"
+  },
+  {
+    topic: "Nature",
+    q: "Do you think it's important to take children to the zoo?",
+    points: [
+      "正面：直接接触能建立真实的情感连接",
+      "反面：圈养方式本身有伦理争议",
+      "更好的替代：奈良的鹿自由漫步 / 高质量纪录片"
+    ],
+    phrases: ["firsthand experience builds empathy", "ethical concerns about captivity", "wildlife documentaries as an alternative", "connection with nature"],
+    en: "I think the intention is good — firsthand experience with animals can build empathy that textbooks simply can't replicate. But I do have some reservations about traditional zoos. Keeping animals in captivity raises genuine ethical questions. In Nara, Japan, I saw a very different model — deer roam freely around the city and interact naturally with visitors. That felt much more meaningful than seeing animals behind glass. Alternatively, high-quality nature documentaries like Attenborough's can create a surprisingly powerful emotional connection. Exposure to animals is important, but the way we do it matters.",
+    cn: "出发点是好的，直接接触动物能建立课本无法复制的共情。但我对传统动物园有些保留——圈养存在真实的伦理问题。在日本奈良，鹿自由地在城市里漫步和游客互动，这比隔着玻璃看动物有意义多了。接触动物很重要，但方式同样重要。"
+  },
+  {
+    topic: "Nature",
+    q: "Should there be laws to protect nature?",
+    points: [
+      "法律是必要的底线，但执行力是关键",
+      "个人自觉远远不够——深海渔船的例子",
+      "法律 + 经济激励需要同时发挥作用"
+    ],
+    phrases: ["legislation sets the baseline", "enforcement is the real challenge", "economic incentives alongside legal restrictions", "individual awareness is not enough"],
+    en: "Yes, absolutely. Individual awareness and goodwill are simply not enough when there are strong economic incentives pulling in the other direction. The deep-sea fishing industry is a clear example — those fleets operate on a massive scale precisely because it's profitable. Without legal restrictions and genuine enforcement, the damage will continue regardless of how many people watch nature documentaries. That said, laws alone aren't sufficient either. They work best when combined with economic incentives that make sustainable practices financially viable for the people involved.",
+    cn: "当然需要。当经济利益驱动反向行为时，个人意识和善意远远不够。深海渔业是个很好的例子——没有法律约束和真实执法，破坏就会持续。不过法律本身也不够，最有效的是法律约束和经济激励同时发挥作用。"
+  },
+  {
+    topic: "Journey",
+    q: "Is it a good choice to travel by plane?",
+    points: [
+      "长途国际旅行：速度和便利性无可替代",
+      "但碳排放是真实代价",
+      "短途旅行高铁更合理——环保且体验更好"
+    ],
+    phrases: ["unmatched in terms of speed", "carbon footprint", "viable alternative for short distances"],
+    en: "For long international trips like Japan, flying is really the only practical option — the speed and convenience are unmatched. But I do think we need to be honest about the environmental cost. Flying has a significant carbon footprint, and for shorter distances, alternatives like high-speed rail are often more sensible both environmentally and in terms of the overall travel experience. So I'd say it depends heavily on the distance and whether alternatives exist.",
+    cn: "对日本这样的长途国际旅行，飞机几乎是唯一实际的选择。但我们需要正视其环境代价。对短途旅行，高铁在环保和体验上往往更合理。所以取决于距离和是否有替代方案。"
+  },
+  {
+    topic: "Journey",
+    q: "What are the differences between group travel and solo travel?",
+    points: [
+      "团队旅行：安全感、共享体验，但灵活性低",
+      "和女友的日本旅行：可以因为喜欢而第二次去同一家烤肉店",
+      "独自旅行：更深的自我探索，代价是某些时刻缺少人分享"
+    ],
+    phrases: ["shared experience vs personal freedom", "spontaneous decisions", "deeper self-reflection", "companionship"],
+    en: "Group travel offers a sense of security and the pleasure of shared experiences — laughing together at the same moments, trying new food together. But it comes at the cost of flexibility. When I travelled to Japan with my girlfriend, we had full control over our itinerary, which meant we could go back to that barbecue restaurant in Kyoto a second time simply because we loved it. Solo travel takes that freedom even further — it encourages deeper self-reflection. The trade-off is that some moments feel incomplete without someone to share them with.",
+    cn: "团队旅行有安全感和共享体验的乐趣，但灵活性低。我和女友的日本旅行让我们完全掌控行程，可以因为喜欢而第二次去同一家烤肉店。独自旅行自由度更大，鼓励更深的自我探索，代价是某些时刻没有人分享。"
+  },
+  {
+    topic: "Journey",
+    q: "Why do some people like making long journeys?",
+    points: [
+      "真正脱离日常、重置思维——短途旅行给不了这个",
+      "接触不同文化带来新视角",
+      "旅途中的挑战本身有价值——迷路、沟通障碍往往是最难忘的部分"
+    ],
+    phrases: ["break from routine", "reset your perspective", "cultural immersion", "discomfort as a catalyst for growth"],
+    en: "I think long journeys offer something that short trips simply can't — a genuine break from routine that allows you to reset mentally. When I was in Japan, observing how local people lived from an outsider's perspective made me reflect on things I'd never questioned about my own life. There's also something valuable about the challenges that come with long travel — getting lost, miscommunicating, adapting to unfamiliar environments. Those uncomfortable moments often turn out to be the most memorable and formative parts of the trip.",
+    cn: "长途旅行能提供短途旅行无法给予的东西——真正脱离日常、重置思维。在日本，以旁观者视角观察当地人的生活，让我反思了很多自己从未质疑过的事情。旅途中的挑战——迷路、沟通障碍——往往是最难忘也最有价值的部分。"
+  },
+  {
+    topic: "Journey",
+    q: "Why do some people prefer to travel abroad?",
+    points: [
+      "文化反差带来真正的新鲜感和视角",
+      "国内旅行太熟悉，缺少真正的脱离感",
+      "奈良老夫妇喂鹿：给了我关于人与自然关系的全新视角"
+    ],
+    phrases: ["cultural contrast", "genuine sense of escape", "language barrier as a valuable challenge", "broaden horizons"],
+    en: "I think the main appeal is cultural contrast. Travelling abroad forces you into situations where your usual assumptions don't apply — the food is different, the social norms are different, even the way people queue or greet each other is different. In Japan, something as simple as watching an elderly couple feed the deer in Nara gave me a completely different perspective on the relationship between humans and nature. That kind of insight is harder to find when you're travelling somewhere familiar. The slight disorientation of being abroad is actually part of the value.",
+    cn: "最大的吸引力是文化反差。出境旅行把你置于日常假设不再适用的处境。在日本，仅仅是看到一对老夫妇在奈良喂鹿，就给了我关于人与自然关系的全新视角。这种洞察在熟悉的地方旅行时很难获得。"
+  },
+  {
+    topic: "Problem Solving",
+    q: "Do you think children are born smart or become smart?",
+    points: [
+      "两者都有，但环境和习惯的影响远大于天赋",
+      "真正的聪明 = 识别问题并找到创造性解决方案",
+      "我做IELTS工具的例子：不是天生会编程，是有真实问题想解决"
+    ],
+    phrases: ["nature vs nurture", "problem-solving ability", "cultivated through curiosity", "intelligence is malleable"],
+    en: "I think it's both, but environment and habits play a much bigger role than most people assume. Raw intelligence might be partially innate, but the kind of smartness that actually matters — the ability to identify a problem and find a creative solution — is something that gets cultivated through curiosity and practice. My own experience building that IELTS tool is a small example of this. I wasn't born knowing how to code or design systems. I just had a real problem I wanted to solve, and that motivation drove me to figure things out.",
+    cn: "两者都有，但环境和习惯的影响远比大多数人以为的大。真正重要的那种聪明——识别问题并找到创造性解决方案的能力——是通过好奇心和实践培养出来的。我做IELTS工具的经历就是个小例子，不是天生会编程，而是有一个真实的问题想解决。"
+  },
+  {
+    topic: "Problem Solving",
+    q: "Why does modern society need talents of all kinds?",
+    points: [
+      "复杂问题需要多角度思维",
+      "做工具时：编程是容易的一半，理解什么对学习者有用才是难的",
+      "只重视单一人才的社会：拥有强大工具却没有使用它的智慧"
+    ],
+    phrases: ["multidisciplinary approach", "technical solutions need human context", "diverse perspectives drive innovation"],
+    en: "Complex problems rarely have purely technical solutions. When I built my IELTS writing tool, the coding part was actually the easier half — the harder part was understanding what kind of feedback would genuinely help a language learner. That required a completely different kind of thinking. AI systems need people with technical skills to build them, but also people with linguistic, ethical, and cultural knowledge to guide how they're used. A society that only values one type of talent ends up with powerful tools and no wisdom about how to use them.",
+    cn: "复杂问题很少有纯技术解决方案。我做IELTS工具时，编程部分反而是容易的一半，更难的是理解什么样的反馈对语言学习者真正有帮助。AI系统需要技术人才来构建，也需要有语言和文化素养的人来引导。一个只重视单一类型人才的社会，最终拥有强大的工具却没有使用它的智慧。"
+  },
+  {
+    topic: "Advice",
+    q: "Should people prepare before giving advice?",
+    points: [
+      "有准备的建议更有针对性，但过度准备会变成说教",
+      "最有效的建议来自真实经验，不是理论",
+      "我推广工具给同事：真实性比任何论点更有说服力"
+    ],
+    phrases: ["advice from lived experience", "over-preparation becomes lecturing", "empathy before solutions"],
+    en: "To some extent, yes — but I think the most effective advice comes from genuine personal experience rather than theoretical preparation. When I encouraged my colleagues to try the IELTS writing tool I built, I wasn't giving them a prepared speech. I was sharing something I had actually struggled with and solved myself. That authenticity made it land differently than if I'd just read about it and passed it on. The risk of over-preparation is that advice starts to feel like a lecture rather than a conversation.",
+    cn: "在一定程度上是的，但最有效的建议来自真实的个人经历而非理论准备。我向同事推荐那个工具时，是在分享我自己真实挣扎过并解决了的事情。这种真实性让建议更容易被接受。过度准备的风险是建议开始感觉像说教而不是对话。"
+  },
+  {
+    topic: "Advice",
+    q: "What are the problems if you ask too many people for advice?",
+    points: [
+      "建议互相矛盾→决策瘫痪",
+      "过度寻求外部验证会削弱独立判断力",
+      "就像过度依赖AI：核心是保持自己的判断"
+    ],
+    phrases: ["analysis paralysis", "conflicting opinions", "erodes independent judgment", "too many cooks"],
+    en: "The main risk is what I'd call analysis paralysis — when you receive too many conflicting opinions, it becomes harder to make any decision at all. There's also a subtler problem: constantly seeking external validation gradually erodes your confidence in your own judgment. I actually think about this in the context of AI tools too. If you ask an AI for advice on every small decision, you risk losing the habit of thinking things through yourself. The healthiest approach is to gather a few trusted perspectives, then make the final call yourself.",
+    cn: "主要风险是所谓的分析瘫痪——收到太多互相矛盾的意见时，反而更难做出任何决定。还有一个更隐性的问题：不断寻求外部验证会逐渐削弱你对自己判断力的信心。我在AI工具的语境下也会想到这一点——如果每个小决定都问AI，你可能会失去自己思考的习惯。"
+  },
+  {
+    topic: "Advice",
+    q: "Why do some people prefer asking friends over parents for advice?",
+    points: [
+      "朋友处于相似的人生阶段，建议更直接适用",
+      "父母成长于不同时代，经验有价值但不总能直接套用",
+      "科技和职业领域尤其明显——父母很难理解vibe coding或AI工具"
+    ],
+    phrases: ["shared context", "generational gap", "lived in different eras", "peer understanding vs parental wisdom"],
+    en: "I think it comes down to shared context. Friends are often at a similar life stage, facing similar pressures and decisions, so their advice feels more directly applicable. Parents, on the other hand, grew up in a very different era — their experience is valuable, but it doesn't always translate cleanly to modern situations. This is especially true in technology and career fields. If I asked my parents about whether to invest time in learning AI tools or vibe coding, they simply wouldn't have the frame of reference to give useful guidance. That's not a criticism — it's just a generational reality.",
+    cn: "根本在于共同的处境。朋友往往处于相似的人生阶段，他们的建议感觉更直接适用。父母成长于不同的时代，经验有价值但不总是能直接套用到现代情况。在科技和职业领域尤其如此。这不是批评，只是代际现实。"
+  },
+  {
+    topic: "Mobile Phone",
+    q: "How do young and old people use mobile phones differently?",
+    points: [
+      "年轻人：多任务——社交、AI工具、效率应用同时进行",
+      "老年人：传统上更多用于基础通讯",
+      "但移动支付模糊了这条界线——老年人也高度依赖手机"
+    ],
+    phrases: ["multitasking vs single-purpose use", "digital natives", "mobile payment blurs the line"],
+    en: "Young people tend to use phones as multitasking devices — messaging, social media, AI assistants, productivity tools, all simultaneously. I personally use mine to talk through ideas with AI tools while walking, which is quite a different use case from making calls. Older people traditionally use phones more for basic communication. But I think mobile payment has actually blurred this divide significantly in China — even elderly people now depend heavily on their phones for everyday transactions. So the gap is narrowing, even if the depth and variety of usage still differs.",
+    cn: "年轻人倾向于把手机当多任务设备——同时处理社交、AI工具、效率应用。我个人会在散步时用手机和AI工具对话整理思路。老年人传统上更多用于基础通讯。但在中国，移动支付已经显著模糊了这条界线——老年人现在也高度依赖手机进行日常交易。"
+  },
+  {
+    topic: "Mobile Phone",
+    q: "Is it a waste of time to take pictures with mobile phones?",
+    points: [
+      "不是浪费，但过度拍照会妨碍真实体验",
+      "在日本：最难忘的时刻往往是放下手机的时刻（奈良喂鹿）",
+      "关键不是拍不拍照，而是持续记录的习惯是否妨碍了真正的投入"
+    ],
+    phrases: ["documenting vs experiencing", "present in the moment", "memory vs record"],
+    en: "I don't think it's inherently a waste of time, but there's a real tension between documenting an experience and actually being present in it. When I was in Japan, I noticed that the moments I remember most vividly — like watching that elderly couple feeding the deer in Nara — were moments when I wasn't thinking about taking a photo. There's something about reaching for your phone that pulls you slightly out of the experience. The question isn't whether to take photos, but whether the habit of constant documentation is getting in the way of genuine presence.",
+    cn: "我不认为本质上是浪费时间，但记录体验和真正投入其中之间存在真实的张力。在日本，我发现自己记忆最清晰的时刻——比如看那对老夫妇喂鹿——恰恰是我没想着拍照的时刻。关键不是拍不拍照，而是持续记录的习惯是否妨碍了真正的投入。"
+  },
+  {
+    topic: "Mobile Phone",
+    q: "Do you think it's necessary to have laws on mobile phone use?",
+    points: [
+      "某些场景法律是必要的：驾驶、考试",
+      "但过度立法进入私人空间是另一回事",
+      "自我管理更可持续——我做app限制自己用手机备考的例子"
+    ],
+    phrases: ["legislate for safety-critical contexts", "self-regulation is more sustainable", "personal autonomy"],
+    en: "In certain contexts, yes — laws restricting phone use while driving are clearly necessary for public safety. But I think there's a limit to how far legislation should go into people's personal habits. The more sustainable solution is self-regulation. Personally, when I was preparing intensively for IELTS, I actually built a small app to filter my messages and limit interruptions — checking them only every thirty minutes. That kind of intentional self-management is more empowering than having restrictions imposed externally, and it builds habits that last beyond any specific rule.",
+    cn: "在某些场景是的——比如禁止驾驶时使用手机的法律显然有必要。但我认为立法进入个人习惯有其边界。更可持续的方案是自我管理。我在备考雅思时自己做了一个app来过滤消息、限制打扰，每三十分钟才看一次。这种主动的自我管理比被动接受外部限制更有效。"
+  },
+  {
+    topic: "Spending",
+    q: "Do you think it's important to save money?",
+    points: [
+      "重要，但储蓄和投资自己之间要平衡",
+      "关键区别：消费 vs 投资——有些支出有复利回报",
+      "Claude Code：$20/月换来工具+技能+效率，回报远超货币成本"
+    ],
+    phrases: ["saving vs investing in yourself", "expenditure vs investment", "compounding returns on skill development"],
+    en: "Saving is important, but I think the more nuanced question is the difference between spending and investing. Some expenditures look like costs but are actually investments with compounding returns. The Claude Code subscription is a good example for me — twenty dollars a month sounds modest, but what I got from it was a functional tool I built myself, a new technical skill, and a significantly more efficient preparation process. That's a return that far exceeds the monetary cost. So I'd say save money on things that don't develop you, but be willing to spend on things that genuinely do.",
+    cn: "储蓄重要，但更有意思的问题是消费和投资之间的区别。有些支出看起来是成本，实际上是有复利回报的投资。Claude Code的订阅对我来说就是这样——每月二十美元，换来的是一个我自己做的工具、一项新技术技能和显著更高效的备考流程。回报远超货币成本。"
+  },
+  {
+    topic: "Spending",
+    q: "What kind of things are people happy to pay a high price for?",
+    points: [
+      "稀缺性和独特性：限量版、定制化",
+      "效率和时间：能帮你省时间的工具人们愿意付高价",
+      "情感价值：礼物、体验、重要记忆相关的东西"
+    ],
+    phrases: ["scarcity and exclusivity", "time is the ultimate resource", "emotional premium", "willingness to pay reflects perceived value"],
+    en: "I think people are generally willing to pay a premium for three things: exclusivity, efficiency, and emotional significance. Luxury goods command high prices partly because of their scarcity. But in the modern context, efficiency tools are increasingly in that category too — people will pay significant amounts for software or services that genuinely save them time, because time has become the most constrained resource. And then there's emotional value — gifts, experiences, things associated with important memories. The common thread is that the perceived value clearly exceeds the monetary cost.",
+    cn: "我认为人们通常愿意为三类东西付高价：稀缺性、效率和情感意义。在现代背景下，效率工具也越来越进入这个范畴——人们愿意为真正能节省时间的软件付相当的费用，因为时间已经成为最稀缺的资源。还有情感价值——礼物、体验、和重要记忆相关的东西。"
+  },
+  {
+    topic: "Spending",
+    q: "Do people buy things they don't need?",
+    points: [
+      "是的，社交媒体和算法推荐加剧了冲动消费",
+      "但"需要"本身的定义很复杂——有些看似不必要的购买有真实心理价值",
+      "真正的问题：买了却没带来期望价值的东西"
+    ],
+    phrases: ["impulse buying", "algorithm-driven consumption", "emotional spending", "the psychology of want vs need"],
+    en: "Yes, absolutely — and I think social media and algorithmic recommendation systems have made this significantly worse. People are constantly exposed to curated content designed to trigger desire. But I'd also push back slightly on the framing — the line between want and need isn't always clear. Some purchases that look unnecessary on paper provide genuine psychological value: a sense of identity, comfort, or belonging. The problem isn't really buying things you don't strictly need; it's buying things that don't actually deliver the value you were seeking when you bought them.",
+    cn: "是的，社交媒体和算法推荐系统让这种情况更严重。但我也想稍微质疑一下这个框架——想要和需要之间的界限并不总是清晰的。一些表面上不必要的购买提供了真实的心理价值。真正的问题不是买了严格意义上不需要的东西，而是买了并没有带来你期望价值的东西。"
+  },
+  {
+    topic: "Encouraging",
+    q: "How can leaders encourage their employees?",
+    points: [
+      "以身作则 + 消除障碍，而不只是口头鼓励",
+      "我推广工具给同事：成功不是因为我说它有用，而是消除了技术门槛",
+      "原则：让第一步尽量简单，让结果自己说话"
+    ],
+    phrases: ["genuine autonomy", "lower the barrier to entry", "visible quick wins", "lead by example"],
+    en: "I think the most effective leaders encourage by example and by removing obstacles rather than just giving verbal praise. When I encouraged my colleagues to try the IELTS writing tool I built, the reason it worked wasn't because I told them it was useful — it was because I removed the technical barrier entirely. They didn't need to know how to prompt an AI; they just needed to use the tool. If you want people to adopt new habits or approaches, make it as easy as possible to take the first step, and let the results speak for themselves.",
+    cn: "我认为最有效的领导者是以身作则并消除障碍，而不只是口头鼓励。我说服同事使用那个工具的原因，不是因为我告诉他们它有用，而是因为我完全消除了技术门槛。这是一个更广泛的领导原则：如果你想让人采纳新习惯，就尽量降低第一步的难度，让结果自己说话。"
+  },
+  {
+    topic: "Encouraging",
+    q: "When should parents encourage their children?",
+    points: [
+      "在孩子挣扎但还没放弃的时候——这个时刻外部支持最有价值",
+      "过于频繁的鼓励会失去意义",
+      "鼓励努力过程而不是结果——培养韧性而不是条件性的自我价值感"
+    ],
+    phrases: ["at the point of struggle not failure", "encourage the process not the outcome", "meaningful vs empty praise"],
+    en: "I think the most valuable encouragement comes at the point of struggle — when a child is finding something genuinely difficult but hasn't given up yet. That's the moment when external support can tip the balance. Encouragement that comes too easily or too frequently loses its meaning. There's also an important distinction between encouraging effort and encouraging outcomes. Praising a child for working hard regardless of the result builds resilience. Praising them only when they succeed teaches them that their value is conditional on performance.",
+    cn: "最有价值的鼓励出现在挣扎的时刻——当孩子觉得某件事真的很难但还没放弃的时候。过于容易或频繁的鼓励会失去意义。鼓励努力过程和鼓励结果之间有重要区别——无论结果如何都表扬孩子的努力能培养韧性。"
+  },
+  {
+    topic: "Encouraging",
+    q: "Do you think some people are better at persuading than others?",
+    points: [
+      "是的，但说服力更多是可培养的技能而非天赋",
+      "最有说服力的人往往先倾听再表达",
+      "真实经验比任何技巧都有说服力"
+    ],
+    phrases: ["persuasion as a learnable skill", "listen before you speak", "authenticity over technique", "credibility comes from lived experience"],
+    en: "Yes, definitely — but I think persuasiveness is more of a cultivated skill than an innate talent. The most persuasive people I've encountered are usually those who listen carefully before making their case. Technique matters, but authenticity matters more. When I encouraged colleagues to try my IELTS tool, the most persuasive thing I could say wasn't a polished argument — it was simply that I'd built it myself, used it myself, and it had genuinely helped me. That credibility from lived experience is hard to manufacture.",
+    cn: "是的，但我认为说服力更多是可以培养的技能而非天赋。最有说服力的人通常先认真倾听再表达立场。技巧重要，但真实性更重要。我说服同事使用那个工具时，最有力的不是什么精心设计的论点，而是我自己做的、自己用的、真的帮到了我这个事实本身。"
+  }
+];
+
+// State
+const topics = ["All", ...new Set(data.map(d => d.topic))];
+let filtered = [...data];
+let current = 0;
+let activeTopic = "All";
+
+// Shuffle
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+filtered = shuffle([...data]);
+
+// Build topic buttons
+const topicBar = document.getElementById('topicBar');
+topics.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'topic-btn' + (t === 'All' ? ' active' : '');
+  btn.textContent = t;
+  btn.onclick = () => {
+    activeTopic = t;
+    document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filtered = shuffle(t === 'All' ? [...data] : data.filter(d => d.topic === t));
+    current = 0;
+    renderCard();
+  };
+  topicBar.appendChild(btn);
+});
+
+function renderCard() {
+  const container = document.getElementById('cardContainer');
+  const counterEl = document.getElementById('counter');
+  const progressEl = document.getElementById('progressFill');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><h3>No cards found</h3><p>Try a different topic.</p></div>';
+    return;
+  }
+
+  const card = filtered[current];
+  counterEl.textContent = `${current + 1} / ${filtered.length}`;
+  progressEl.style.width = `${((current + 1) / filtered.length) * 100}%`;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-topic-tag">
+        <span class="tag">${card.topic}</span>
+        <span class="card-num">Part 3</span>
+      </div>
+      <div class="card-question">${card.q}</div>
+
+      <div class="reveal-section">
+        <button class="reveal-btn" id="btn1" onclick="toggleReveal(1)">
+          <span>💡 Key Points + Phrases</span>
+          <span class="reveal-icon">▾</span>
+        </button>
+        <div class="reveal-content" id="content1">
+          <div class="points-content">
+            ${card.points.map(p => `
+              <div class="point-item">
+                <span class="point-dot">·</span>
+                <span>${p}</span>
+              </div>
+            `).join('')}
+            <div class="phrases-row">
+              <div class="phrases-label">Key Phrases</div>
+              <div class="phrase-chips">
+                ${card.phrases.map(ph => `<span class="chip">${ph}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-section">
+        <button class="reveal-btn" id="btn2" onclick="toggleReveal(2)">
+          <span>📝 Full Answer</span>
+          <span class="reveal-icon">▾</span>
+        </button>
+        <div class="reveal-content" id="content2">
+          <div class="answer-content">
+            <div class="answer-en">${card.en}</div>
+            <div class="answer-divider"></div>
+            <div class="answer-cn">${card.cn}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleReveal(num) {
+  const btn = document.getElementById(`btn${num}`);
+  const content = document.getElementById(`content${num}`);
+  const isOpen = content.classList.contains('open');
+
+  if (isOpen) {
+    content.classList.remove('open');
+    btn.classList.remove('open', `revealed-${num}`);
+  } else {
+    content.classList.add('open');
+    btn.classList.add('open', `revealed-${num}`);
+  }
+}
+
+function nextCard() {
+  if (current < filtered.length - 1) {
+    current++;
+  } else {
+    filtered = shuffle([...filtered]);
+    current = 0;
+  }
+  renderCard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevCard() {
+  if (current > 0) {
+    current--;
+    renderCard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+renderCard();
+</script>
+</body>
+</html>
