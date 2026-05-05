@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IELTS Part 3 · Flashcards</title>
+<meta name="description" content="IELTS 口语 Part 3 学生自复习卡片原型，可作为 Project B 生成复习卡之后的轻量学生复习出口。">
+<title>IELTS 口语复习卡片｜学生自复习原型</title>
 
 <style>
   :root {
@@ -23,16 +24,22 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  /* HEADER */
+  /* 顶部导航 */
   header {
     padding: 20px 24px 16px;
     border-bottom: 1px solid var(--border);
@@ -46,18 +53,20 @@
   }
 
   .logo {
-    font-family: Georgia, serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     font-size: 18px;
     color: var(--accent);
     letter-spacing: 0.02em;
+    font-weight: 700;
   }
 
   .logo span {
     color: var(--text-muted);
     font-size: 13px;
-    font-family: 'Courier New', monospace;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     margin-left: 10px;
     font-style: normal;
+    font-weight: 400;
   }
 
   .counter {
@@ -70,7 +79,7 @@
     border: 1px solid var(--border);
   }
 
-  /* TOPIC FILTER */
+  /* 话题筛选 */
   .topic-bar {
     padding: 14px 24px;
     display: flex;
@@ -89,7 +98,7 @@
     background: var(--surface);
     color: var(--text-muted);
     font-size: 12px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
@@ -102,7 +111,7 @@
     font-weight: 500;
   }
 
-  /* MAIN CARD AREA */
+  /* 主卡片区 */
   main {
     flex: 1;
     display: flex;
@@ -110,6 +119,50 @@
     align-items: center;
     justify-content: flex-start;
     padding: 32px 20px 100px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .intro {
+    width: 100%;
+    max-width: 680px;
+    min-width: 0;
+    margin-bottom: 24px;
+  }
+
+  .mode-label {
+    display: inline-flex;
+    align-items: center;
+    color: var(--accent2);
+    background: rgba(126, 184, 164, 0.08);
+    border: 1px solid rgba(126, 184, 164, 0.18);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .intro h1 {
+    font-size: 28px;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .intro p {
+    color: var(--text-mid);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 620px;
+    overflow-wrap: anywhere;
+  }
+
+  #cardContainer {
+    width: 100%;
+    max-width: 680px;
+    min-width: 0;
   }
 
   .card {
@@ -154,9 +207,10 @@
     line-height: 1.45;
     color: var(--text);
     font-weight: 400;
+    overflow-wrap: anywhere;
   }
 
-  /* REVEAL SECTIONS */
+  /* 展开区 */
   .reveal-section {
     border-top: 1px solid var(--border);
     overflow: hidden;
@@ -172,7 +226,7 @@
     align-items: center;
     justify-content: space-between;
     color: var(--text-mid);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     font-size: 13px;
     font-weight: 500;
     transition: background 0.2s, color 0.2s;
@@ -208,7 +262,7 @@
 
   .reveal-content.open { max-height: 1000px; }
 
-  /* POINTS CONTENT */
+  /* 思路内容 */
   .points-content {
     padding: 4px 20px 20px;
     background: var(--reveal1);
@@ -239,7 +293,6 @@
     font-family: 'Courier New', monospace;
     font-size: 10px;
     color: var(--accent2);
-    text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 8px;
     opacity: 0.7;
@@ -261,7 +314,7 @@
     border-radius: 8px;
   }
 
-  /* FULL ANSWER CONTENT */
+  /* 完整答案 */
   .answer-content {
     padding: 4px 20px 20px;
     background: var(--reveal2);
@@ -286,7 +339,7 @@
     color: var(--text-muted);
   }
 
-  /* BOTTOM NAV */
+  /* 底部翻卡 */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -305,7 +358,7 @@
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--text-mid);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -326,6 +379,7 @@
   .progress-bar {
     width: 100%;
     max-width: 680px;
+    min-width: 0;
     height: 2px;
     background: var(--border);
     border-radius: 1px;
@@ -353,6 +407,8 @@
   }
 
   @media (max-width: 480px) {
+    .intro h1 { font-size: 23px; }
+    .intro p { font-size: 13px; }
     .card-question { font-size: 17px; }
     header { padding: 16px 16px 12px; }
     main { padding: 24px 12px 100px; }
@@ -362,13 +418,18 @@
 <body>
 
 <header>
-  <div class="logo">Part 3 <span>flashcards</span></div>
+  <div class="logo">IELTS 口语复习卡 <span>学生自复习原型</span></div>
   <div class="counter" id="counter">1 / 1</div>
 </header>
 
 <div class="topic-bar" id="topicBar"></div>
 
 <main>
+  <section class="intro" aria-label="项目说明">
+    <div class="mode-label">Project B 学生复习出口样例</div>
+    <h1>把课堂内容变成<br>可翻看的口语复习卡</h1>
+    <p>当前页面是轻量静态演示：用 IELTS 口语 Part 3 示例卡片展示学生如何按话题复习、先回忆思路，再展开关键表达和完整答案。</p>
+  </section>
   <div class="progress-bar">
     <div class="progress-fill" id="progressFill" style="width:0%"></div>
   </div>
@@ -376,8 +437,8 @@
 </main>
 
 <div class="bottom-nav">
-  <button class="nav-btn" onclick="prevCard()">← Prev</button>
-  <button class="nav-btn primary" onclick="nextCard()">Next →</button>
+  <button class="nav-btn" onclick="prevCard()">上一张</button>
+  <button class="nav-btn primary" onclick="nextCard()">下一张</button>
 </div>
 
 <script>
@@ -804,13 +865,27 @@ const data = [
   }
 ];
 
-// State
+// 页面状态
+const topicLabels = {
+  "All": "全部",
+  "App / AI": "应用与 AI",
+  "Famous Person": "名人与想象力",
+  "Sportsperson": "运动员",
+  "Nature": "自然保护",
+  "Journey": "旅行",
+  "Problem Solving": "解决问题",
+  "Advice": "建议",
+  "Mobile Phone": "手机",
+  "Spending": "消费",
+  "Encouraging": "鼓励与说服"
+};
+
 const topics = ["All", ...new Set(data.map(d => d.topic))];
 let filtered = [...data];
 let current = 0;
 let activeTopic = "All";
 
-// Shuffle
+// 洗牌，让每次复习顺序不固定。
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -821,12 +896,12 @@ function shuffle(arr) {
 
 filtered = shuffle([...data]);
 
-// Build topic buttons
+// 生成话题筛选按钮。
 const topicBar = document.getElementById('topicBar');
 topics.forEach(t => {
   const btn = document.createElement('button');
   btn.className = 'topic-btn' + (t === 'All' ? ' active' : '');
-  btn.textContent = t;
+  btn.textContent = topicLabels[t] || t;
   btn.onclick = () => {
     activeTopic = t;
     document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
@@ -844,7 +919,7 @@ function renderCard() {
   const progressEl = document.getElementById('progressFill');
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><h3>No cards found</h3><p>Try a different topic.</p></div>';
+    container.innerHTML = '<div class="empty-state"><h3>没有找到复习卡</h3><p>换一个话题试试。</p></div>';
     return;
   }
 
@@ -855,15 +930,15 @@ function renderCard() {
   container.innerHTML = `
     <div class="card">
       <div class="card-topic-tag">
-        <span class="tag">${card.topic}</span>
-        <span class="card-num">Part 3</span>
+        <span class="tag">${topicLabels[card.topic] || card.topic}</span>
+        <span class="card-num">口语 Part 3</span>
       </div>
       <div class="card-question">${card.q}</div>
 
       <div class="reveal-section">
         <button class="reveal-btn" id="btn1" onclick="toggleReveal(1)">
-          <span>💡 Key Points + Phrases</span>
-          <span class="reveal-icon">▾</span>
+          <span>关键思路 + 可背表达</span>
+          <span class="reveal-icon">v</span>
         </button>
         <div class="reveal-content" id="content1">
           <div class="points-content">
@@ -874,7 +949,7 @@ function renderCard() {
               </div>
             `).join('')}
             <div class="phrases-row">
-              <div class="phrases-label">Key Phrases</div>
+              <div class="phrases-label">可背表达</div>
               <div class="phrase-chips">
                 ${card.phrases.map(ph => `<span class="chip">${ph}</span>`).join('')}
               </div>
@@ -885,8 +960,8 @@ function renderCard() {
 
       <div class="reveal-section">
         <button class="reveal-btn" id="btn2" onclick="toggleReveal(2)">
-          <span>📝 Full Answer</span>
-          <span class="reveal-icon">▾</span>
+          <span>完整答案 + 中文解释</span>
+          <span class="reveal-icon">v</span>
         </button>
         <div class="reveal-content" id="content2">
           <div class="answer-content">
